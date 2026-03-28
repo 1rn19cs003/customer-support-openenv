@@ -13,7 +13,7 @@ client = OpenAI(
 BASE_URL = "http://127.0.0.1:8000"
 
 def run():
-    obs = requests.get(f"{BASE_URL}/reset").json()
+    obs = requests.post(f"{BASE_URL}/reset").json()
     total_score = 0
 
     while True:
