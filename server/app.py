@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from server.environment import MyEnvironment
+from fastapi import Request
 
 app = FastAPI()
 env = MyEnvironment()
@@ -9,9 +10,16 @@ class Action(BaseModel):
     action_type: str
     content: str | None = None
 
-@app.post("/reset")
-def reset():
+@app.get("/debug")
+def debug():
+    return {"msg": "new code deployed"}
+
+@app.api_route("/reset", methods=["GET", "POST"])
+def reset(request: Request):
+    print("METHOD:", request.method)
+
     obs = env.reset()
+
     return {
         "observation": obs
     }
