@@ -1,26 +1,25 @@
-# Customer Support OpenEnv
+# Customer Support OpenEnv Environment
 
-## Description
-This environment simulates a customer support system where an AI agent:
-- classifies tickets
-- responds to users
-- decides escalation
+## 🧠 Overview
+This project simulates a real-world customer support system where an AI agent must:
+- classify incoming tickets
+- generate appropriate responses
+- decide whether escalation is required
 
-## Actions
-- categorize
-- reply
-- escalate
+This environment is designed to evaluate agent decision-making using the OpenEnv framework.
 
-## Observation
-- ticket message
+---
 
-## Reward
-- 0.4 category match
-- 0.4 reply correctness
-- 0.2 escalation decision
+## 🎯 Objective
+The agent interacts with the environment using:
+- `reset()` → get new ticket
+- `step(action)` → perform action
+- `state()` → inspect internal state
 
-## Run locally
-uvicorn server.app:app --reload
+---
 
-## Inference
-python inference.py
+## 📥 Observation Space
+```json
+{
+  "message": "User issue text"
+}
