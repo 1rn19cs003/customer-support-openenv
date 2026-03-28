@@ -2,9 +2,19 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from server.environment import MyEnvironment
 from fastapi import Request
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 env = MyEnvironment()
+
+# Enable CORS for HF space access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for HF spaces
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Action(BaseModel):
     action_type: str

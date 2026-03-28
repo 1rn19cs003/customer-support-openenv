@@ -10,7 +10,8 @@ client = OpenAI(
     base_url=os.getenv("API_BASE_URL")
 )
 
-BASE_URL = "http://127.0.0.1:8000"
+# Use HF space URL or localhost for local testing
+BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
 
 def run():
     obs = requests.post(f"{BASE_URL}/reset").json()
