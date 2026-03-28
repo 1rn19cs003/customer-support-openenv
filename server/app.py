@@ -10,6 +10,9 @@ class Action(BaseModel):
     action_type: str
     content: str | None = None
 
+@app.get("/debug")
+def debug():
+    return {"msg": "new code deployed"}
 
 @app.api_route("/reset", methods=["GET", "POST"])
 def reset(request: Request):
