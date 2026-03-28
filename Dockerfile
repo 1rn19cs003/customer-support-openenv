@@ -14,5 +14,7 @@ COPY . .
 # 👇 Step 4: Expose port for HF
 EXPOSE 8000
 
+RUN echo "force rebuild v3"
+
 # 👇 Step 5: Run app (HF compatible)
 CMD ["sh", "-c", "uvicorn server.app:app --host 0.0.0.0 --port ${PORT:-8000}"]
