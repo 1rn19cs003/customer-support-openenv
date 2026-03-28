@@ -9,6 +9,7 @@ class Action(BaseModel):
     action_type: str
     content: str | None = None
 
+@app.get("/reset")
 @app.post("/reset")
 def reset():
     obs = env.reset()
