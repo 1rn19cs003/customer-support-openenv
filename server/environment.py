@@ -1,63 +1,58 @@
 import random
 
-TICKETS = [
-    {
-        "message": "I can't login",
-        "category": "technical",
-        "reply": "Please reset your password",
-        "escalate": False
-    },
-    {
-        "message": "Refund not received",
-        "category": "billing",
-        "reply": "We are checking your refund",
-        "escalate": True
-    },
-    {
-        "message": "App is crashing frequently",
-        "category": "technical",
-        "reply": "Please reinstall the app",
-        "escalate": True
-    }
+from tasks.easy_task import TASK as EASY_TASK
+from tasks.medium_task import TASK as MEDIUM_TASK
+from tasks.hard_task import TASK as HARD_TASK
+
+from graders.easy_grader import grade as easy_grade
+from graders.medium_grader import grade as medium_grade
+from graders.hard_grader import grade as hard_grade
+
+
+TASKS = [
+    ("easy", EASY_TASK, easy_grade),
+    ("medium", MEDIUM_TASK, medium_grade),
+    ("hard", HARD_TASK, hard_grade),
 ]
+
 
 class MyEnvironment:
 
     def __init__(self):
-        self.ticket = None
+        self.current_task = None
+        self.current_grader = None
+        self.difficulty = None
         self.done = False
 
     def reset(self):
-        self.ticket = random.choice(TICKETS)
+        self.difficulty, self.current_task, self.current_grader = random.choice(TASKS)
         self.done = False
 
         return {
-            "message": self.ticket["message"]
+            "message": self.current_task["input"],
+            "difficulty": self.difficulty
         }
 
     def step(self, action):
-        reward = 0.0
-
-        # Category match
-        if action.action_type == self.ticket["category"]:
-            reward += 0.4
-
-        # Reply match
-        if action.content and self.ticket["reply"].lower() in action.content.lower():
-            reward += 0.4
-
-        # Escalation check
-        if action.action_type == "escalate" and self.ticket["escalate"]:
-            reward += 0.2
+        score = self.current_grader(action.dict(), self.current_task)
 
         self.done = True
 
         return (
-            {"message": self.ticket["message"]},
-            {"score": reward, "reason": "evaluation"},
+            {
+                "message": self.current_task["input"],
+                "difficulty": self.difficulty
+            },
+            {
+                "score": score,
+                "reason": f"Graded using {self.difficulty} task"
+            },
             self.done,
             {}
         )
 
     def state(self):
-        return {"ticket": self.ticket}
+        return {
+            "task": self.current_task,
+            "difficulty": self.difficulty
+        }

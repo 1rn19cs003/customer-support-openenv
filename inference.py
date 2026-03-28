@@ -1,6 +1,9 @@
 import os
 import requests
 from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
 
 client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
@@ -14,16 +17,19 @@ def run():
     total_score = 0
 
     while True:
-        response = client.chat.completions.create(
-            model=os.getenv("MODEL_NAME"),
-            messages=[{"role": "user", "content": str(obs)}]
-        )
+        message = str(obs).lower()
 
-        # Dummy action (baseline)
-        action = {
-            "action_type": "technical",
-            "content": "Please reset your password"
-        }
+        # simple rule-based baseline
+        if "refund" in message:
+            action = {
+                "action_type": "billing",
+                "content": "We are checking your refund"
+            }
+        else:
+            action = {
+                "action_type": "technical",
+                "content": "Please reset your password"
+            }
 
         result = requests.post(f"{BASE_URL}/step", json=action).json()
 
