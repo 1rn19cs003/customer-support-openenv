@@ -1,0 +1,8 @@
+name: customer-support-env
+description: Customer support ticket resolution environment
+version: 0.1.0
+
+endpoints:
+  reset: /reset
+  step: /step
+  state: /state
