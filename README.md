@@ -1,3 +1,12 @@
+---
+title: customer-support-env
+emoji: 🤖
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 8000
+---
+
 # Customer Support OpenEnv Environment
 
 ## 🧠 Overview
