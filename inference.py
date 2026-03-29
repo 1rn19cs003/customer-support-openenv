@@ -5,22 +5,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    base_url=os.getenv("API_BASE_URL")
-)
+# Use environment variables (HF Spaces / OpenEnv)
+API_BASE_URL = os.getenv("API_BASE_URL") or "http://127.0.0.1:8000"
+API_KEY = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
 
-# Use HF space URL or localhost for local testing
-BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
+client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
 
 def run():
-    obs = requests.post(f"{BASE_URL}/reset").json()
+    # Use POST for reset to satisfy OpenEnv checks
+    obs_resp = requests.post(f"{API_BASE_URL}/reset")
+    if obs_resp.status_code != 200:
+        raise Exception(f"Reset failed: {obs_resp.text}")
+    obs = obs_resp.json()
     total_score = 0
+    done = False
 
-    while True:
+    while not done:
         message = str(obs).lower()
 
-        # simple rule-based baseline
+        # Simple rule-based baseline
         if "refund" in message:
             action = {
                 "action_type": "billing",
@@ -32,14 +36,18 @@ def run():
                 "content": "Please reset your password"
             }
 
-        result = requests.post(f"{BASE_URL}/step", json=action).json()
+        # POST action to /step
+        step_resp = requests.post(f"{API_BASE_URL}/step", json=action)
+        if step_resp.status_code != 200:
+            raise Exception(f"Step failed: {step_resp.text}")
 
-        total_score += result["reward"]["score"]
-
-        if result["done"]:
-            break
+        result = step_resp.json()
+        obs = result.get("observation", {})
+        total_score += result.get("reward", {}).get("score", 0)
+        done = result.get("done", False)
 
     print("Final Score:", total_score)
+
 
 if __name__ == "__main__":
     run()
