@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the app using main()
-CMD ["python", "server/app.py"]
+CMD ["python", "-m", "server.app"]
