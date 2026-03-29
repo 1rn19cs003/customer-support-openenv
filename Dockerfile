@@ -18,4 +18,4 @@ EXPOSE 8000
 RUN echo "force rebuild v3"
 
 # Step 5: Run app (HF multi-mode compatible)
-CMD ["uvicorn", "server.app:main", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "8000"]
