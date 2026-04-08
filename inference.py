@@ -20,6 +20,7 @@ def run():
         if obs_resp.status_code != 200:
             print(f"Reset failed! URL: {reset_url}, Status: {obs_resp.status_code}, Response: {obs_resp.text}")
             return  # Exit gracefully instead of raising
+        
         obs = obs_resp.json()
     except Exception as e:
         print(f"Exception during reset: {e}")
