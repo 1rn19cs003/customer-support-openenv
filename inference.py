@@ -12,12 +12,19 @@ MODEL_NAME = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
 
 client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
 
+
 def run():
-    # Use POST for reset to satisfy OpenEnv checks
-    obs_resp = requests.post(f"{API_BASE_URL}/reset")
-    if obs_resp.status_code != 200:
-        raise Exception(f"Reset failed: {obs_resp.text}")
-    obs = obs_resp.json()
+    reset_url = f"{API_BASE_URL}/reset"
+    try:
+        obs_resp = requests.post(reset_url)
+        if obs_resp.status_code != 200:
+            print(f"Reset failed! URL: {reset_url}, Status: {obs_resp.status_code}, Response: {obs_resp.text}")
+            return  # Exit gracefully instead of raising
+        obs = obs_resp.json()
+    except Exception as e:
+        print(f"Exception during reset: {e}")
+        return
+
     total_score = 0
     done = False
 
@@ -36,12 +43,16 @@ def run():
                 "content": "Please reset your password"
             }
 
-        # POST action to /step
-        step_resp = requests.post(f"{API_BASE_URL}/step", json=action)
-        if step_resp.status_code != 200:
-            raise Exception(f"Step failed: {step_resp.text}")
+        try:
+            step_resp = requests.post(f"{API_BASE_URL}/step", json=action)
+            if step_resp.status_code != 200:
+                print(f"Step failed! Status: {step_resp.status_code}, Response: {step_resp.text}")
+                return
+            result = step_resp.json()
+        except Exception as e:
+            print(f"Exception during step: {e}")
+            return
 
-        result = step_resp.json()
         obs = result.get("observation", {})
         total_score += result.get("reward", {}).get("score", 0)
         done = result.get("done", False)
