@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Use environment variables (HF Spaces / OpenEnv)
+
 API_BASE_URL = (
     os.getenv("API_BASE_URL")
     or "http://127.0.0.1:8000"
