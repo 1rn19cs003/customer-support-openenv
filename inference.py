@@ -16,8 +16,9 @@ API_BASE_URL = (
 API_KEY = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
 
-client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+# client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
 
+client = OpenAI(api_key=API_KEY)
 
 def run():
     reset_url = f"{API_BASE_URL}/reset"
