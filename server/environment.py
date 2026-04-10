@@ -1,3 +1,4 @@
+# server/environment.py
 import random
 from tasks.easy_task import TASK as EASY_TASK
 from tasks.medium_task import TASK as MEDIUM_TASK
@@ -22,12 +23,10 @@ class MyEnvironment:
         self.actions_log = []
 
     def reset(self, difficulty: str = None):
-        # If difficulty specified, use that task
         if difficulty and difficulty in TASKS:
             self.difficulty = difficulty
             self.current_task, self.current_grader = TASKS[difficulty]
         else:
-            # Random selection for backward compatibility
             self.difficulty, (self.current_task, self.current_grader) = random.choice(list(TASKS.items()))
         
         self.done = False
@@ -42,7 +41,7 @@ class MyEnvironment:
     def step(self, action):
         self.step_count += 1
         
-        # Convert action to dict if it's a Pydantic model
+        # Convert to dict if it's a Pydantic model
         if hasattr(action, 'dict'):
             action_dict = action.dict()
         else:
@@ -50,10 +49,10 @@ class MyEnvironment:
         
         self.actions_log.append(action_dict)
         
-        # Calculate score based on ALL actions so far
+        # Calculate score
         score = self.current_grader(self.actions_log, self.current_task)
         
-        # End episode after 3 steps or if resolved
+        # End after 3 steps or if resolved
         if self.step_count >= 3 or action_dict.get("action_type") == "resolve":
             self.done = True
         

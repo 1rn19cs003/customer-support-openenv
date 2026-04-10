@@ -1,6 +1,6 @@
 def grade(actions, task):
     if not actions:
-        return 0.0
+        return 0.001
     
     score = 0.0
     last_action = actions[-1]
@@ -11,7 +11,7 @@ def grade(actions, task):
     else:
         score -= 0.2
     
-    # Reply quality (check all actions for responses)
+    # Reply quality
     best_reply_score = 0.0
     for action in actions:
         if "content" in action and action["content"]:
@@ -25,4 +25,6 @@ def grade(actions, task):
     
     score += best_reply_score
     
-    return max(0.0, min(score, 1.0))
+    # Ensure strictly between 0 and 1
+    score = max(0.001, min(0.999, score))
+    return score

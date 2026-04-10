@@ -1,18 +1,17 @@
 def grade(actions, task):
     if not actions:
-        return 0.0
+        return 0.001
     
     score = 0.0
-    last_action = actions[-1]
     
-    # Category check (any action can be correct)
+    # Category check
     category_correct = any(a.get("action_type") == task["expected_category"] for a in actions)
     if category_correct:
         score += 0.3
     else:
         score -= 0.2
     
-    # Reply quality (best response across all actions)
+    # Reply quality
     best_reply_score = 0.0
     for action in actions:
         if "content" in action and action["content"]:
@@ -26,7 +25,7 @@ def grade(actions, task):
     
     score += best_reply_score
     
-    # Escalation decision (check any action)
+    # Escalation decision
     escalated = any(a.get("action_type") == "escalate" for a in actions)
     if task["expected_escalation"]:
         if escalated:
@@ -37,4 +36,6 @@ def grade(actions, task):
         if escalated:
             score -= 0.3
     
-    return max(0.0, min(score, 1.0))
+    # Ensure strictly between 0 and 1
+    score = max(0.001, min(0.999, score))
+    return score
