@@ -1,4 +1,5 @@
 import os
+from wsgiref import headers
 import requests
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -6,7 +7,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Use environment variables (HF Spaces / OpenEnv)
-API_BASE_URL = os.getenv("API_BASE_URL") or "http://127.0.0.1:8000"
+
+API_BASE_URL = (
+    os.getenv("API_BASE_URL")
+    or "http://127.0.0.1:8000"
+    or "https://abhi13082000-customer-support-env.hf.space"
+)
 API_KEY = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
 
@@ -44,7 +50,13 @@ def run():
             }
 
         try:
-            step_resp = requests.post(f"{API_BASE_URL}/step", json=action)
+            print("Sending action to /step:", action)
+            action = {
+            "action_type": "billing",   # or "technical", etc.
+            "content": "We are checking your refund"  # or any string, or None
+            }
+            headers = {"Authorization": f"Bearer {API_KEY}"}
+            step_resp = requests.post(f"{API_BASE_URL}/step", json=action, headers=headers)
             if step_resp.status_code != 200:
                 print(f"Step failed! Status: {step_resp.status_code}, Response: {step_resp.text}")
                 return
